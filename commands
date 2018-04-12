@@ -1,0 +1,8 @@
+#1 to create a self signed certificate and key from a config file
+openssl req -config vault-cert.conf -x509 -newkey rsa:2048 -keyout vault-key.pem -out vault-cert.pem -days 365 -extensions v3_req
+
+#2 to read a certificate 
+openssl x509 -in vault-cert.pem -noout -text
+
+#3 decrypt our current key:
+openssl rsa -in key.pem -out key.insecure.pem
