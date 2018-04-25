@@ -6,3 +6,8 @@ openssl x509 -in vault-cert.pem -noout -text
 
 #3 decrypt our current key:
 openssl rsa -in key.pem -out key.insecure.pem
+
+#4 extract public cert from a remote host
+
+openssl s_client -showcerts -connect hostname:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > hostname.pem
+
