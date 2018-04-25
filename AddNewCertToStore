@@ -1,0 +1,37 @@
+Use the following steps to extract the new certificate and add to the keystore.
+
+Get the InstallCert.java program from https://github.com/escline/InstallCert  (InstallCert.java)
+Usage: 
+
+Need to compile, first: 
+
+javac InstallCert.java 
+
+ # Access server, and retrieve certificate (accept default certificate 1) 
+
+java InstallCert [host]:[port] 
+
+ # Extract certificate from created jssecacerts keystore 
+
+keytool -export -alias [host]-1 -keystore jssecacerts -storepass changeit -file host.cer
+
+Log into server
+
+cd $JAVA_HOME/jre/lib/security
+
+
+
+backup the keystore
+cp cacerts cacerts.backup
+
+
+
+Delete the old certificate by alias
+
+keytool  -delete -alias tomcat -keystore cacerts -storepass changeit
+
+
+
+Add the new certificate by alias
+
+keytool -importcert -alias tomcat -keystore cacerts -storepass changeit -file host.cer
