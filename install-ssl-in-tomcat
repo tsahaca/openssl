@@ -1,0 +1,76 @@
+1. Decide a secret password for tomcat SSL keystore
+2. create a keystore:
+3. keytool -keysize 2048 -genkey -alias tomcat -keyalg RSA -keystore tomcat.keystore
+4. Enter the password you decided in step 1
+5. First and Last Name — The fully-qualified domain name.
+ example: hostname.company.com
+
+6. Enter other Distinguished Information:
+
+Attribute                         Value
+============================================
+Organizational Unit	              IT
+Organization	                    Company Name
+City/Locality	                    San Francisco
+State/Province	                  CA
+Country Code	                    US
+
+7.  Enter the following command into keytool to create a CSR with Subject alternative names (SAN):
+
+keytool -certreq -keyalg RSA -alias tomcat -file <CSR File Name> -keystore tomcat.keystore -ext san=dns:shortname.domain, dns=shortname.shortdomain,dsn=hostname
+
+you can set CSR File Name as hostname.csr. 
+
+
+
+Important
+
+The Subject Alternative Name (SAN) field lets you specify additional host names (sites, IP addresses, common names, etc.) to be protected by a single SSL Certificate, such as a Multi-Domain (SAN) or Extend Validation Multi-Domain Certificate. In reality end users should not access the application by real hostname or IP, should use some friendly dns or site name.
+
+  8. Enter the Password you decided in Step 1.
+
+  9. Now send the CSR file to Certificate Authority to certify. 
+ 10. You will wait to get a file with extension .p7b (PKCS #7) from Certificate Authority which will contain all the certificates in the chain ( root, intermed and the certificate you requested). This file with extension .p7b does not contain the private key. This private key always remains in the keystore you created in Step 2.
+
+ 11. Now the import the entire certificate chain into your tomcat keystore:
+
+keytool -importcert -alias tomcat -keystore tomcat.keystore -trustcacerts -file <the certificate chain file with .p7b extension>
+
+Important: you should use the same alias, you used in Step 2 . Here I am using tomcat everywhere.
+
+ 12. Enter the password you decided in step 1
+
+ 13. Configure tomcat to use tomcat.keystore with valid SSL certificate  
+
+ 14. Copy the  tomcat.keystore file to conf folder inside tomcat
+
+ 15. Now edit server.xml file in conf folder as
+
+ 16. Uncomment and configure the SSL Coyote HTTP/1.1 Connector on port 8443  
+
+<!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
+<Connector
+protocol="org.apache.coyote.http11.Http11NioProtocol"
+port="8443" maxThreads="200"
+scheme="https" secure="true" SSLEnabled="true"
+keystoreFile="conf/tomcat.keystore" keystorePass="changeit"
+clientAuth="false" sslProtocol="TLS"/>
+
+Note: changeit must be replaced with the secret password you decided in Step 1
+
+  17. Comment the non-SSL/TLS HTTP/1.1 Connector on port 8080
+
+<!--
+
+<Connector port="8080" protocol="HTTP/1.1"
+connectionTimeout="20000"
+redirectPort="8453" />
+
+-->
+
+18. Save changes in server.xml
+
+
+
+
+
