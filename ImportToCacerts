@@ -1,0 +1,15 @@
+#!/bin/bash
+
+COUNTER=0
+nslookup companydc.local | grep Address | awk -F: '{print $2}' | while read -r line ; do
+COUNTER=$((COUNTER+1))
+if [ $COUNTER -gt 1 ]
+then
+ nslookup  $line | grep name  | awk -F= '{print $2}' | sed 's/.$//' | while read -r line2; do
+ #echo "host  $line2"
+ certAlias=wamdc$((COUNTER-1))
+ openssl s_client -showcerts -connect $line2:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > $certAlias.pem
+ keytool  -noprompt -importcert -alias $certAlias -keystore cacerts -storepass changeit -file $certAlias.pem
+ done
+fi
+done
