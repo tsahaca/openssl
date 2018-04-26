@@ -7,9 +7,8 @@ if [ $COUNTER -gt 1 ]
 then
  nslookup  $line | grep name  | awk -F= '{print $2}' | sed 's/.$//' | while read -r line2; do
  #echo "host  $line2"
- certAlias=wamdc$((COUNTER-1))
- openssl s_client -showcerts -connect $line2:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > $certAlias.pem
- keytool  -noprompt -importcert -alias $certAlias -keystore cacerts -storepass changeit -file $certAlias.pem
+ openssl s_client -showcerts -connect $line2:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > $line2.pem
+ keytool  -noprompt -importcert -alias $line2 -keystore cacerts -storepass changeit -file $line2.pem
  done
 fi
 done
