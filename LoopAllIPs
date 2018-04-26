@@ -1,0 +1,12 @@
+#!/bin/bash
+
+COUNTER=0
+nslookup companydc | grep Address | awk -F: '{print $2}' | while read -r line ; do
+COUNTER=$((COUNTER+1))
+if [ $COUNTER -gt 1 ]
+then
+#    echo "$COUNTER $line"
+ nslookup  $line | grep name  | awk -F= '{print $2}' | sed 's/.$//'
+    # your code goes here
+fi
+done
