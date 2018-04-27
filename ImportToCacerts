@@ -1,14 +1,14 @@
 #!/bin/bash
 
 COUNTER=0
-nslookup companydc.local | grep Address | awk -F: '{print $2}' | while read -r line ; do
+nslookup companydc.local | grep Address | awk -F: '{print $2}' | while read -r line_ip_address ; do
 COUNTER=$((COUNTER+1))
 if [ $COUNTER -gt 1 ]
 then
- nslookup  $line | grep name  | awk -F= '{print $2}' | sed 's/.$//' | while read -r line2; do
+ nslookup  $line_ip_address | grep name  | awk -F= '{print $2}' | sed 's/.$//' | while read -r line_hostname; do
  #echo "host  $line2"
- ALIAS=`echo $line2 | awk -F. '{print $1}'`
- openssl s_client -showcerts -connect $line2:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > $ALIAS.pem
+ ALIAS=`echo $line_hostname | awk -F. '{print $1}'`
+ openssl s_client -showcerts -connect $line2_hostname:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > $ALIAS.pem
  keytool  -noprompt -importcert -alias $ALIAS -keystore cacerts -storepass changeit -file $ALIAS.pem
  done
 fi
