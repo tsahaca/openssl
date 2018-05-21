@@ -11,3 +11,6 @@ openssl rsa -in key.pem -out key.insecure.pem
 
 openssl s_client -showcerts -connect hostname:636 </dev/null 2>/dev/null|openssl x509 -outform PEM > hostname.pem
 
+keytool -list -v -keystore cacerts
+
+
